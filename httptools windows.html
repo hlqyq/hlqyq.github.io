@@ -7,9 +7,9 @@
   <meta http-equiv="x-ua-compatible" content="ie=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-  <title>编程岁月 | 无名
+  <title>httptools windows 编译 | 编程岁月
 </title>
-  <link rel="canonical" href="/index.html">
+  <link rel="canonical" href="/httptools windows.html">
 
 
 
@@ -19,6 +19,7 @@
   <link rel="stylesheet" href="/theme/css/style.css">
 
 
+<meta name="description" content="sanic是一个Flask风格的异步web框架,底层依赖UVLOOP（可选）以及httptools(必选),而httptools和uvloop目前均不支持windows.由于uvloop是可选，所以直接采用asyncio缺省的ProactorEventLoop事件循环（性能有损一半左右）。而httptools则必须移植到windows了。">
 </head>
 
 <body>
@@ -41,30 +42,27 @@
 
   <div class="main">
     <div class="container">
-      <h1>Articles
+      <h1>httptools windows 编译
 </h1>
       <hr>
-<article class="row teaser">
-  <header class="col-sm-4 text-muted">
-    <ul>
-      <li title="2017-12-29T00:00:00+08:00">
+<article class="article">
+  <header>
+    <ul class="list-inline">
+      <li class="list-inline-item text-muted" title="2017-12-29T00:00:00+08:00">
         <i class="fa fa-clock-o"></i>
         周五 29 十二月 2017
       </li>
-      <li>
+      <li class="list-inline-item">
         <i class="fa fa-folder-open-o"></i>
         <a href="/category/bands.html">bands</a>
       </li>
-      <li>
+      <li class="list-inline-item">
         <i class="fa fa-user-o"></i>
         <a href="/author/hu-le-qiu.html">胡乐秋</a>      </li>
     </ul>
   </header>
-  <div class="col-sm-8">
-    <h4 class="title"><a href="/httptools windows.html">httptools windows 编译</a></h4>
-    <div class="content">
-      sanic是一个Flask风格的异步web框架,底层依赖UVLOOP（可选）以及httptools(必选),而httptools和uvloop目前均不支持windows.由于uvloop是可选，所以直接采用asyncio缺省的ProactorEventLoop事件循环（性能有损一半左右）。而httptools则必须移植到windows了。
-    </div>
+  <div class="content">
+    <p><a href="https://github.com/channelcat/sanic/">sanic</a>是一个Flask风格的异步web框架,底层依赖UVLOOP（可选）以及httptools(必选),而httptools和uvloop目前均不支持windows.由于uvloop是可选，所以直接采用asyncio缺省的ProactorEventLoop事件循环（性能有损一半左右）。而httptools则必须移植到windows了。</p>
   </div>
 </article>
     </div>
