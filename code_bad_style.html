@@ -825,24 +825,22 @@
 <hr>
 <h2><span id="xx" />__</h2>
 <p><a href="#catalog">返回</a></p>
-<div class="highlight"><pre><span></span><code>```HTML
-<span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&quot;container&quot;</span><span class="nt">&gt;&lt;/div&gt;</span>
-<span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">&quot;stylesheet&quot;</span> <span class="na">href=</span><span class="s">&quot;https://imsun.github.io/gitment/style/default.css&quot;</span><span class="nt">&gt;</span>
-<span class="nt">&lt;script</span> <span class="na">src=</span><span class="s">&quot;https://imsun.github.io/gitment/dist/gitment.browser.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
-<span class="nt">&lt;script&gt;</span>
+<div id="container"></div>
+
+<p><link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+<script>
 var gitment = new Gitment({
-  id: &#39;code_bad_style&#39;,
-  owner: &#39;hlqyq&#39;,
-  repo: &#39;hlqyq.github.io&#39;,
+  id: 'sanic_windows_install',
+  owner: 'hlqyq',
+  repo: 'hlqyq.github.io',
   oauth: {
-    client_id: &#39;1f7a240da8bcca1563a9&#39;,
-    client_secret: &#39;2a59d57ab5b48ce420724d3032ce9cc099b00661&#39;,
+    client_id: '1f7a240da8bcca1563a9',
+    client_secret: '2a59d57ab5b48ce420724d3032ce9cc099b00661',
   },
 })
-gitment.render(&#39;container&#39;)
-<span class="nt">&lt;/script&gt;</span>
-```
-</code></pre></div>
+gitment.render('container')
+</script></p>
   </div>
 </article>
     </div>
