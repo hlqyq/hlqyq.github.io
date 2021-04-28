@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="chinese (simplified)">
+
+<head>
+  <!-- Required meta tags always come first -->
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <title>代码的坏味道 | 编程岁月
+</title>
+  <link rel="canonical" href="/code_bad_style.html">
+
+
+
+  <link rel="stylesheet" href="/theme/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/theme/css/font-awesome.min.css">
+  <link rel="stylesheet" href="/theme/css/pygments/default.min.css">
+  <link rel="stylesheet" href="/theme/css/style.css">
+
+
+<meta name="description" content="代码的坏味道 版本 禅 模型与视图 view_welcome.py model_welcome.py 函数缺省私有化 消除全局变量 显示依赖 模型不允许使用请求对象 模型函数返回值 模型R资源 SQL语句 SQL占位符 单值容器加逗号 有序字典初始化 and条件序列 or条件序列 变量初始化多行合并 字典设置缺省值 使用map剔除重复 使用map多参数剔除重复 使用zip简化代码 zip的逆 使用dict.get默认值简化代码 使用dict.update简化代码 从列表取值 版本 版本 日期 作者 联系 备注 0.1 2020-11-30 胡乐秋 66536382@qq.com 首次生成 返回 禅 功能是对客户和老板负责; 代码是对自己和同事负责。 写得越少 …">
+</head>
+
+<body>
+  <header class="header">
+    <div class="container">
+      <div class="row">
+        <div class="col-sm-12">
+          <h1 class="title"><a href="">编程岁月</a></h1>
+          <p class="text-muted">无名</p>
+          <ul class="list-inline">
+            <li class="list-inline-item"><a href="https://github.com/hlqyq" target="_blank">github</a></li>
+            <li class="list-inline-item"><a href="http://blog.justtodo.com/" target="_blank">晓月刀</a></li>
+            <li class="list-inline-item"><a href="http://www.csew.cn/" target="_blank">易睿</a></li>
+            <li class="list-inline-item"><a href="http://blog.csdn.net/hlqyq/" target="_blank">博客</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="main">
+    <div class="container">
+      <h1>代码的坏味道
+</h1>
+      <hr>
+<article class="article">
+  <header>
+    <ul class="list-inline">
+      <li class="list-inline-item text-muted" title="2021-04-28T00:00:00+08:00">
+        <i class="fa fa-clock-o"></i>
+        周三 28 四月 2021
+      </li>
+      <li class="list-inline-item">
+        <i class="fa fa-folder-open-o"></i>
+        <a href="/category/bands.html">bands</a>
+      </li>
+      <li class="list-inline-item">
+        <i class="fa fa-user-o"></i>
+        <a href="/author/hu-le-qiu.html">胡乐秋</a>      </li>
+    </ul>
+  </header>
+  <div class="content">
+    <h1><span id="catalog" />代码的坏味道</h1>
+<ol>
+<li><a href="#document-version">版本</a></li>
+<li><a href="#zen">禅</a></li>
+<li>
+<p><a href="#model-and-view">模型与视图</a></p>
+<ol>
+<li><a href="#view-welcome-py">view_welcome.py</a></li>
+<li><a href="#model-welcome-py">model_welcome.py</a></li>
+</ol>
+</li>
+<li>
+<p><a href="#function-privatization">函数缺省私有化</a></p>
+</li>
+<li><a href="#global-variable-eliminate">消除全局变量</a></li>
+<li><a href="#explicit-dependence">显示依赖</a></li>
+<li><a href="#model-not-request">模型不允许使用请求对象</a></li>
+<li><a href="#model-function-return">模型函数返回值</a></li>
+<li><a href="#model-r-resource">模型R资源</a></li>
+<li><a href="#sql">SQL语句</a></li>
+<li><a href="#sql-placeholder">SQL占位符</a></li>
+<li><a href="#one-item-in-container">单值容器加逗号</a></li>
+<li><a href="#ordered-dict-init">有序字典初始化</a></li>
+<li><a href="#and-sequence">and条件序列</a></li>
+<li><a href="#or-sequence">or条件序列</a></li>
+<li><a href="#variable-init-merge">变量初始化多行合并</a></li>
+<li><a href="#dict-setdefault">字典设置缺省值</a></li>
+<li><a href="#use-map">使用map剔除重复</a></li>
+<li><a href="#use-map-multiple-parameter">使用map多参数剔除重复</a></li>
+<li><a href="#use-zip">使用zip简化代码</a></li>
+<li><a href="#use-zip-unzip">zip的逆</a></li>
+<li><a href="#use-dict-get-default">使用dict.get默认值简化代码</a></li>
+<li><a href="#use-dict-update">使用dict.update简化代码</a></li>
+<li><a href="#list-extract-value">从列表取值</a></li>
+</ol>
+<hr>
+<h2><span id="document-version" />版本</h2>
+<table>
+<thead>
+<tr>
+<th align="center">版本</th>
+<th align="center">日期</th>
+<th align="center">作者</th>
+<th align="center">联系</th>
+<th align="center">备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center">0.1</td>
+<td align="center">2020-11-30</td>
+<td align="center">胡乐秋</td>
+<td align="center">66536382@qq.com</td>
+<td align="center">首次生成</td>
+</tr>
+</tbody>
+</table>
+<p><a href="#catalog">返回</a></p>
+<hr>
+<h2><span id="zen" />禅</h2>
+<ol>
+<li>功能是对客户和老板负责; 代码是对自己和同事负责。</li>
+<li>写得越少, 写得越好。</li>
+<li>最大的谎言: 先完成功能，有时间再整理代码。于是回答这话的人，永远都没时间了。</li>
+<li>不一定需要知道什么是美，但一定要知道什么是丑。丑的少了，自然就美了。</li>
+<li>改变不了外表的容颜，但总可以改变代码的容颜。</li>
+<li>重复的代码就像重复的美人痣。</li>
+</ol>
+<p><a href="#catalog">返回</a></p>
+<hr>
+<h2><span id="function-privatization" />函数缺省私有化</h2>
+<ol>
+<li>总是假设函数是模块私有的，除非是接口函数.</li>
+<li>私有变为公有容易, 公有变私有难, 所谓易放难收。</li>
+<li>私有化以下划线('_')开头</li>
+</ol>
+<blockquote>
+<p>bad</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">do_anything</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+    <span class="o">...</span>
+</code></pre></div>
+
+
+<blockquote>
+<p>good</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">_do_anything</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+    <span class="o">...</span>
+</code></pre></div>
+
+
+<p><a href="#catalog">返回</a></p>
+<hr>
+<h2><span id="global-variable-eliminate" />消除全局变量</h2>
+<blockquote>
+<p>bad</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="n">DEVICE_TRAITS_DICT</span> <span class="o">=</span> <span class="kc">None</span>
+
+<span class="k">def</span> <span class="nf">_get_device_traits_dict</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;得到设备特征字典</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        返回{{device_id}: {device_traits_dict}}</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">DEVICE_TRAITS_DICT</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">DEVICE_TRAITS_DICT</span><span class="p">:</span>
+        <span class="n">DEVICE_TRAITS_DICT</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">return</span> <span class="n">DEVICE_TRAITS_DICT</span>
+</code></pre></div>
+
+
+<blockquote>
+<p>good</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">_get_device_traits_dict</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;得到设备特征字典</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        返回{{device_id}: {device_traits_dict}}</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">func</span><span class="p">,</span> <span class="n">tag_name</span> <span class="o">=</span> <span class="p">(</span><span class="n">_get_device_traits_dict</span><span class="p">,</span> <span class="s1">&#39;__cache&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">tag_name</span><span class="p">):</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">tag_name</span><span class="p">,</span> <span class="p">{})</span>
+    <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">tag_name</span><span class="p">)</span>
+</code></pre></div>
+
+
+<p><a href="#catalog">返回</a></p>
+<hr>
+<h2><span id="explicit-dependence" />显示依赖</h2>
+<p>显示总比隐式好</p>
+<blockquote>
+<p>bad</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">common.utils</span> <span class="kn">import</span> <span class="o">*</span>  <span class="c1">#pylint:disable=wildcard-import, unused-wildcard-import</span>
+</code></pre></div>
+
+
+<blockquote>
+<p>good</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">common.utils</span> <span class="kn">import</span> <span class="p">(</span><span class="n">invoke</span><span class="p">,</span> <span class="n">dispatch</span><span class="p">)</span>
+</code></pre></div>
+
+
+<p><a href="#catalog">返回</a></p>
+<hr>
+<h2><span id="model-and-view" />模型与视图</h2>
+<blockquote>
+<ol>
+<li>视图仅负责与用户交互:</li>
+</ol>
+<blockquote>
+<ol>
+<li>解析用户输入请求, 获取用户输入参数;</li>
+<li>根据用户输入参数调用模型, 获取处理结果;</li>
+<li>渲染模型处理结果, 返回给用户。</li>
+</ol>
+</blockquote>
+<ol>
+<li>模型仅负责与数据库交互:</li>
+</ol>
+<blockquote>
+<ol>
+<li>检查视图输入参数;</li>
+<li>根据参数查询、修改数据库;</li>
+<li>返回处理结果</li>
+</ol>
+</blockquote>
+<ol>
+<li>视图不能包含数据库交互: 不能执行SQL, 查询或修改数据库</li>
+<li>模型不能包含用户交互：不能使用"request"对象</li>
+</ol>
+</blockquote>
+<p><a href="#catalog">返回</a></p>
+<hr>
+<h3><span id="view-welcome-py" />view_welcome.py</h3>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">model_welcome</span> <span class="k">as</span> <span class="n">model</span>
+
+<span class="nd">@get</span><span class="p">(</span><span class="s1">&#39;/welcome&#39;</span><span class="p">)</span>
+<span class="nd">@view</span><span class="p">(</span><span class="s1">&#39;/welcome.html&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">_</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;请求欢迎页面</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        返回欢迎页面</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># 1. 解析用户输入请求, 获取用户输入参数</span>
+    <span class="n">user_name_tag</span><span class="p">,</span> <span class="n">error_tag</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;user_name&#39;</span><span class="p">,</span> <span class="s1">&#39;error&#39;</span><span class="p">)</span>
+    <span class="n">user_name</span> <span class="o">=</span> <span class="n">request_query_get</span><span class="p">(</span><span class="n">user_name_tag</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">user_name</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span><span class="n">error_tag</span><span class="p">:</span> <span class="s1">&#39;未指定用户名(&quot;</span><span class="si">{}</span><span class="s1">&quot;)参数.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">user_name_tag</span><span class="p">)}</span>
+    <span class="c1"># 2. 根据用户输入参数调用模型, 获取处理结果</span>
+    <span class="n">success</span><span class="p">,</span> <span class="n">result_or_error</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">is_valid_user</span><span class="p">(</span><span class="n">user_name</span><span class="p">)</span>
+    <span class="c1"># 3. 渲染模型处理结果, 返回给用户</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">success</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span><span class="n">error_tag</span><span class="p">:</span> <span class="n">result_or_error</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">{</span><span class="n">user_name_tag</span><span class="p">:</span> <span class="n">user_name_tag</span><span class="p">}</span>
+</code></pre></div>
+
+
+<p><a href="#catalog">返回</a></p>
+<hr>
+<h3><span id="model-welcome-py" />model_welcome.py</h3>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">common.dbhelper</span> <span class="kn">import</span> <span class="n">db_search_record_count</span>
+
+<span class="k">def</span> <span class="nf">is_valid_user</span><span class="p">(</span><span class="n">user_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;是否为有效的用户名</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        user_name: 用户名称</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        返回(True, {是否为有效的的用户名: bool})或(False, {error_message})</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># 1. 检查视图输入参数</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">user_name</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="s1">&#39;指定用户名参数不能为空.&#39;</span><span class="p">)</span>
+    <span class="c1"># 2.根据参数查询、修改数据库</span>
+    <span class="n">success</span><span class="p">,</span> <span class="n">result_or_error</span> <span class="o">=</span> <span class="n">db_search_record_count</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+    <span class="c1"># 3. 返回处理结果</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">success</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">success</span><span class="p">,</span> <span class="n">result_or_error</span><span class="p">)</span>
+    <span class="n">record_count</span> <span class="o">=</span> <span class="n">result_or_error</span>
+    <span class="k">return</span> <span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">record_count</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+</code></pre></div>
+
+
+<p><a href="#catalog">返回</a></p>
+<hr>
+<h2><span id="model-not-request" />模型不允许使用请求对象</h2>
+<p>模型不能使用用户请求对象(request).</p>
+<blockquote>
+<p>bad</p>
+<blockquote>
+<p>model_station.py</p>
+</blockquote>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">get_user_station_list</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+        <span class="o">...</span>
+        <span class="n">filter_dict</span> <span class="o">=</span> <span class="n">request_forms_get_record_dict</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+        <span class="o">...</span>
+</code></pre></div>
+
+
+<blockquote>
+<blockquote>
+<p>view_station.py</p>
+</blockquote>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">model_station</span> <span class="k">as</span> <span class="n">model</span>
+
+<span class="nd">@post</span><span class="p">(</span><span class="s1">&#39;/station_statistcs&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">_</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="o">...</span>
+    <span class="n">success</span><span class="p">,</span> <span class="n">result_or_error</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">get_user_station_list</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+    <span class="o">...</span>
+</code></pre></div>
+
+
+<blockquote>
+<p>good</p>
+<blockquote>
+<p>model_station.py</p>
+</blockquote>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">get_user_station_list</span><span class="p">(</span><span class="n">filter_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="o">...</span>
+</code></pre></div>
+
+
+<blockquote>
+<blockquote>
+<p>view_station.py</p>
+</blockquote>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">model_station</span> <span class="k">as</span> <span class="n">model</span>
+
+<span class="nd">@post</span><span class="p">(</span><span class="s1">&#39;/station_statistcs&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">_</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="o">...</span>
+    <span class="n">filter_dict</span> <span class="o">=</span> <span class="n">request_forms_get_record_dict</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+    <span class="n">success</span><span class="p">,</span> <span class="n">result_or_error</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">get_user_station_list</span><span class="p">(</span><span class="n">filter_dict</span><span class="p">)</span>
+    <span class="o">...</span>
+</code></pre></div>
+
+
+<p><a href="#catalog">返回</a></p>
+<hr>
+<h2><span id="model-function-return" />模型函数返回值</h2>
+<ol>
+<li>模型函数推荐总是返回元组: (True, {期望结果})或(False, {error_message})</li>
+<li>除非永不失败, 才可直接返回期望值。</li>
+</ol>
+<p><a href="#catalog">返回</a></p>
+<hr>
+<h2><span id="model-r-resource" />模型R资源</h2>
+<p>在模型中，推荐定义"R"字符串类。以消除代码中的字符串魔术常量.体现"大范围分布，局部集中"的设计原则.</p>
+<blockquote>
+<p>bad</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">_do_something_1</span><span class="p">(</span><span class="n">record_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+    <span class="o">...</span>
+    <span class="n">record_id</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="n">record_dict</span><span class="o">.</span><span class="n">get</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">))</span>
+    <span class="o">...</span>
+
+<span class="k">def</span> <span class="nf">_do_something_2</span><span class="p">(</span><span class="n">record_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+    <span class="o">...</span>
+    <span class="n">record_id</span> <span class="o">=</span> <span class="n">record_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">)</span>
+    <span class="o">...</span>
+</code></pre></div>
+
+
+<blockquote>
+<p>good</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">R</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;本模块资源&quot;&quot;&quot;</span>
+    <span class="n">ID_TAG</span><span class="p">,</span> <span class="n">NAME_TAG</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">,</span><span class="s1">&#39; name&#39;</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">_do_something_1</span><span class="p">(</span><span class="n">record_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+    <span class="o">...</span>
+    <span class="n">record_id</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="n">record_dict</span><span class="o">.</span><span class="n">get</span><span class="p">,</span> <span class="p">(</span><span class="n">R</span><span class="o">.</span><span class="n">ID_TAG</span><span class="p">,</span> <span class="n">R</span><span class="o">.</span><span class="n">NAME_TAG</span><span class="p">))</span>
+    <span class="o">...</span>
+
+<span class="k">def</span> <span class="nf">_do_something_2</span><span class="p">(</span><span class="n">record_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+    <span class="o">...</span>
+    <span class="n">record_id</span> <span class="o">=</span> <span class="n">record_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">R</span><span class="o">.</span><span class="n">ID_TAG</span><span class="p">)</span>
+    <span class="o">...</span>
+</code></pre></div>
+
+
+<p><a href="#catalog">返回</a></p>
+<hr>
+<h2><span id="sql" />SQL语句</h2>
+<ol>
+<li>复杂SQL使用双引号(")多行, 保留单引号(')给SQL语句字符串使用</li>
+<li>SQL关键字大写, 其它均为小写</li>
+<li>从句(SELECT, FROM, WHERE, ...)对齐</li>
+<li>嵌套从句缩进对齐</li>
+</ol>
+<blockquote>
+<p>bad</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="n">sql</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;SELECT a.concrete_station_sn,</span>
+<span class="s2">                    c.name AS contract_name,</span>
+<span class="s2">                    d.concrete_name AS concrete_name,</span>
+<span class="s2">                    count(*) AS total</span>
+<span class="s2">             FROM tbl_product_info a JOIN tbl_lab b ON a.concrete_station_sn = b.sn</span>
+<span class="s2">             JOIN tbl_party c ON b.contract_sn = c.sn</span>
+<span class="s2">             JOIN tbl_lab d ON a.concrete_station_sn = d.sn</span>
+<span class="s2">             WHERE a.output_datetime like </span><span class="si">%s</span><span class="s2"> </span><span class="si">{}</span><span class="s2"></span>
+<span class="s2">             group by concrete_station_sn,c.name,d.concrete_name</span>
+<span class="s2">             order by concrete_station_sn,c.name,d.concrete_name&quot;&quot;&quot;</span>
+</code></pre></div>
+
+
+<blockquote>
+<p>good</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="n">sql</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;SELECT tbl_person.*,</span>
+<span class="s2">                tbl_party.name AS party_name,</span>
+<span class="s2">                cost_statistics.total_cost AS total_cost</span>
+<span class="s2">         FROM tbl_person</span>
+<span class="s2">         LEFT JOIN tbl_party ON tbl_party.sn = tbl_person.party_sn</span>
+<span class="s2">         LEFT JOIN (SELECT account AS account,</span>
+<span class="s2">                           SUM(cost) AS total_cost</span>
+<span class="s2">                    FROM tbl_cost</span>
+<span class="s2">                    GROUP BY account) AS cost_statistics</span>
+<span class="s2">                    ON cost_statistics.account = tbl_person.account</span>
+<span class="s2">         WHERE ...</span>
+<span class="s2">         GROUP BY ...</span>
+<span class="s2">         ORDER BY ...</span>
+<span class="s2">         LIMIT ...</span>
+<span class="s2">         OFFSET ...&quot;&quot;&quot;</span>
+</code></pre></div>
+
+
+<p><a href="#catalog">返回</a></p>
+<hr>
+<h2><span id="sql-placeholder" />SQL占位符</h2>
+<p>构建动态SQL语句时, 通常需要根据查询参数的数量生成动态占位符.</p>
+<blockquote>
+<p>bad</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code>    <span class="n">sn_list</span> <span class="o">=</span> <span class="p">[</span><span class="o">...</span><span class="p">]</span>
+    <span class="n">placeholders</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">,&#39;</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">sn_list</span><span class="p">))[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">sql</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;SELECT *</span>
+<span class="s2">             FROM tbl_person</span>
+<span class="s2">             WHERE sn IN (</span><span class="si">{}</span><span class="s2">)&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">placeholders</span><span class="p">)</span>
+</code></pre></div>
+
+
+<blockquote>
+<p>good</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code>    <span class="n">sn_list</span> <span class="o">=</span> <span class="p">[</span><span class="o">...</span><span class="p">]</span>
+    <span class="n">placeholders</span> <span class="o">=</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">sn_list</span><span class="p">])</span>
+    <span class="n">sql</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;SELECT *</span>
+<span class="s2">             FROM tbl_person</span>
+<span class="s2">             WHERE sn IN (</span><span class="si">{}</span><span class="s2">)&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">placeholders</span><span class="p">)</span>
+</code></pre></div>
+
+
+<blockquote>
+<p>good: more pythonic</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">itertools</span>
+
+    <span class="n">sn_list</span> <span class="o">=</span> <span class="p">[</span><span class="o">...</span><span class="p">]</span>
+    <span class="n">placeholders</span> <span class="o">=</span> <span class="s1">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">itertools</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">sn_list</span><span class="p">)))</span>
+    <span class="n">sql</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;SELECT *</span>
+<span class="s2">             FROM tbl_person</span>
+<span class="s2">             WHERE sn IN (</span><span class="si">{}</span><span class="s2">)&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">placeholders</span><span class="p">)</span>
+</code></pre></div>
+
+
+<p><a href="#catalog">返回</a></p>
+<hr>
+<h2><span id="one-item-in-container" />单值容器加逗号</h2>
+<p>对于仅有一项的容器，增加一个逗号, 表明这是有意行为。</p>
+<blockquote>
+<p>bad</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code>    <span class="n">sn_list</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;zs&#39;</span><span class="p">]</span>
+    <span class="n">sn_tuple</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;zs&#39;</span><span class="p">)</span>
+    <span class="n">person_dict_list</span> <span class="o">=</span> <span class="p">[{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;zs&#39;</span><span class="p">,</span> <span class="s1">&#39;age&#39;</span><span class="p">:</span> <span class="mi">18</span><span class="p">}]</span>
+</code></pre></div>
+
+
+<blockquote>
+<p>good</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code>    <span class="n">sn_list</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;zs&#39;</span><span class="p">,]</span>
+    <span class="n">sn_tuple</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;zs&#39;</span><span class="p">,)</span>
+    <span class="n">person_dict_list</span> <span class="o">=</span> <span class="p">[{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;zs&#39;</span><span class="p">,</span> <span class="s1">&#39;age&#39;</span><span class="p">:</span> <span class="mi">18</span><span class="p">},]</span>
+</code></pre></div>
+
+
+<p><a href="#catalog">返回</a></p>
+<hr>
+<h2><span id="ordered-dict-init" />有序字典初始化</h2>
+<p>有序字典可以使用元组列表初始化</p>
+<blockquote>
+<p>bad</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
+
+    <span class="n">field_id_list</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;sn&#39;</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;age&#39;</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+    <span class="n">record_list</span> <span class="o">=</span> <span class="p">[(</span><span class="s1">&#39;zs&#39;</span><span class="p">,</span> <span class="s1">&#39;张三&#39;</span><span class="p">,</span> <span class="mi">18</span><span class="p">),</span> <span class="o">...</span><span class="p">]</span>
+    <span class="n">sn_index</span> <span class="o">=</span> <span class="n">field_id_list</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s1">&#39;sn&#39;</span><span class="p">)</span>
+    <span class="n">result_record_dict</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>  <span class="c1"># {&#39;编号&#39;:[记录列表],...}</span>
+    <span class="k">for</span> <span class="n">record</span> <span class="ow">in</span> <span class="n">record_list</span><span class="p">:</span>
+        <span class="n">sn_</span> <span class="o">=</span> <span class="n">record</span><span class="p">[</span><span class="n">sn_index</span><span class="p">]</span>
+        <span class="n">result_record_dict</span><span class="p">[</span><span class="n">sn_</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">value</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">record</span><span class="p">]</span>
+</code></pre></div>
+
+
+<blockquote>
+<p>good</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
+
+    <span class="n">field_id_list</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;sn&#39;</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;age&#39;</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+    <span class="n">record_list</span> <span class="o">=</span> <span class="p">[(</span><span class="s1">&#39;zs&#39;</span><span class="p">,</span> <span class="s1">&#39;张三&#39;</span><span class="p">,</span> <span class="mi">18</span><span class="p">),</span> <span class="o">...</span><span class="p">]</span>
+    <span class="n">sn_index</span> <span class="o">=</span> <span class="n">field_id_list</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s1">&#39;concrete_station_sn&#39;</span><span class="p">)</span>
+    <span class="n">result_record_dict</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">([(</span><span class="n">record</span><span class="p">[</span><span class="n">sn_index</span><span class="p">],</span> <span class="nb">list</span><span class="p">(</span><span class="n">record</span><span class="p">))</span> <span class="k">for</span> <span class="n">record</span> <span class="ow">in</span> <span class="n">record_list</span><span class="p">])</span>  <span class="c1"># {&#39;编号&#39;:[记录列表],...}</span>
+</code></pre></div>
+
+
+<p><a href="#catalog">返回</a></p>
+<hr>
+<h2><span id="and-sequence" />and条件序列</h2>
+<p>如果出现两个以上的and条件判断, 替换使用"<em>all</em>": 同样支持短路测试.</p>
+<blockquote>
+<p>bad</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code>    <span class="k">if</span> <span class="n">record_list</span> <span class="ow">and</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">record_list</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">record_list</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;*&#39;</span><span class="p">):</span>
+        <span class="k">pass</span>
+</code></pre></div>
+
+
+<blockquote>
+<p>good</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code>    <span class="k">if</span> <span class="nb">all</span><span class="p">((</span><span class="n">record_list</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">record_list</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="n">record_list</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;*&#39;</span><span class="p">)):</span>
+        <span class="k">pass</span>
+</code></pre></div>
+
+
+<p><a href="#catalog">返回</a></p>
+<hr>
+<h2><span id="or-sequence" />or条件序列</h2>
+<p>如果出现两个以上的and条件判断, 替换使用"<em>all</em>": 同样支持短路测试.</p>
+<blockquote>
+<p>bad</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code>    <span class="k">if</span> <span class="n">condition_1</span> <span class="ow">or</span> <span class="n">condition_2</span> <span class="ow">or</span> <span class="n">condition_3</span><span class="p">:</span>
+        <span class="k">pass</span>
+</code></pre></div>
+
+
+<blockquote>
+<p>good</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code>    <span class="k">if</span> <span class="nb">any</span><span class="p">((</span><span class="n">condition_1</span><span class="p">,</span> <span class="n">condition_2</span><span class="p">,</span> <span class="n">condition_3</span><span class="p">)):</span>
+        <span class="k">pass</span>
+</code></pre></div>
+
+
+<p><a href="#catalog">返回</a></p>
+<hr>
+<h2><span id="variable-init-merge" />变量初始化多行合并</h2>
+<blockquote>
+<p>bad</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code>    <span class="n">filter_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">sql_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">value_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="o">...</span>
+</code></pre></div>
+
+
+<blockquote>
+<p>good</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code>    <span class="n">filter_list</span><span class="p">,</span> <span class="n">sql_list</span><span class="p">,</span> <span class="n">value_list</span> <span class="o">=</span> <span class="p">([],</span> <span class="p">[],</span> <span class="p">[])</span>
+    <span class="o">...</span>
+</code></pre></div>
+
+
+<p><a href="#catalog">返回</a></p>
+<hr>
+<h2><span id="dict-setdefault" />字典设置缺省值</h2>
+<p>使用字典对象的"<em>setdefault</em>", 简化并使代码"more pythonic".</p>
+<blockquote>
+<p>bad</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">add_friend</span><span class="p">(</span><span class="n">person_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">friend_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="o">...</span>
+    <span class="n">friends_tag</span> <span class="o">=</span> <span class="s1">&#39;friends&#39;</span>
+    <span class="k">if</span> <span class="n">friends_tag</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">person_dict</span><span class="p">:</span>
+        <span class="n">person_dict</span><span class="p">[</span><span class="n">friends_tag</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">friend_name</span><span class="p">,</span> <span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">person_dict</span><span class="p">[</span><span class="n">friends_tag</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">friend_name</span><span class="p">)</span>
+</code></pre></div>
+
+
+<blockquote>
+<p>good</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code>    <span class="n">friends_tag</span> <span class="o">=</span> <span class="s1">&#39;friends&#39;</span>
+    <span class="n">person_dict</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;friends&#39;</span><span class="p">,</span> <span class="p">[])</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">friend_name</span><span class="p">)</span>
+</code></pre></div>
+
+
+<p><a href="#catalog">返回</a></p>
+<hr>
+<h2><span id="use-map" />使用map剔除重复</h2>
+<blockquote>
+<p>bad</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code>    <span class="o">...</span>
+    <span class="n">sql_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;SUM(a.practice_cement) AS practice_cement,&#39;</span><span class="p">)</span>
+    <span class="n">sql_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;SUM(a.practice_water) AS practice_water,&#39;</span><span class="p">)</span>
+    <span class="n">sql_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;SUM(a.practice_sand) AS practice_sand,&#39;</span><span class="p">)</span>
+    <span class="n">sql_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;SUM(a.practice_fine_stone) AS practice_fine_stone,&#39;</span><span class="p">)</span>
+    <span class="n">sql_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;SUM(a.practice_middle_stone) AS practice_middle_stone,&#39;</span><span class="p">)</span>
+    <span class="n">sql_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;SUM(a.practice_coarse_stone) AS practice_coarse_stone,&#39;</span><span class="p">)</span>
+    <span class="n">sql_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;SUM(a.practice_admixture_material) AS practice_admixture_material,&#39;</span><span class="p">)</span>
+    <span class="n">sql_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;SUM(a.practice_additive) AS practice_additive&#39;</span><span class="p">)</span>
+    <span class="n">sql_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;FROM tbl_product_info a&#39;</span><span class="p">)</span>
+    <span class="n">sql_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;LEFT JOIN tbl_lab b ON a.concrete_station_sn = b.sn&#39;</span><span class="p">)</span>
+    <span class="n">sql_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;LEFT JOIN tbl_party c on b.contract_sn = c.sn&quot;</span><span class="p">)</span>
+    <span class="o">...</span>
+</code></pre></div>
+
+
+<blockquote>
+<p>good</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code>    <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">sql_list</span><span class="o">.</span><span class="n">append</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;SUM(a.practice_cement) AS practice_cement,&#39;</span><span class="p">,</span>
+                               <span class="s1">&#39;SUM(a.practice_water) AS practice_water,&#39;</span><span class="p">,</span>
+                               <span class="s1">&#39;SUM(a.practice_sand) AS practice_sand,&#39;</span><span class="p">,</span>
+                               <span class="s1">&#39;SUM(a.practice_fine_stone) AS practice_fine_stone,&#39;</span><span class="p">,</span>
+                               <span class="s1">&#39;SUM(a.practice_middle_stone) AS practice_middle_stone,&#39;</span><span class="p">,</span>
+                               <span class="s1">&#39;SUM(a.practice_coarse_stone) AS practice_coarse_stone,&#39;</span><span class="p">,</span>
+                               <span class="s1">&#39;SUM(a.practice_admixture_material) AS practice_admixture_material,&#39;</span>
+                               <span class="s1">&#39;SUM(a.practice_additive) AS practice_additive&#39;</span><span class="p">,</span>
+                               <span class="s1">&#39;FROM tbl_product_info a&#39;</span><span class="p">,</span>
+                               <span class="s1">&#39;LEFT JOIN tbl_lab b ON a.concrete_station_sn = b.sn&#39;</span><span class="p">,</span>
+                               <span class="s2">&quot;LEFT JOIN tbl_party c on b.contract_sn = c.sn&quot;</span><span class="p">)))</span>
+</code></pre></div>
+
+
+<p><a href="#catalog">返回</a></p>
+<hr>
+<h2><span id="use-map-multiple-parameter" />使用map多参数剔除重复</h2>
+<blockquote>
+<p>bad</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code>    <span class="o">...</span>
+    <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;cement&#39;</span><span class="p">,</span> <span class="s1">&#39;water&#39;</span><span class="p">,</span> <span class="s1">&#39;sand&#39;</span><span class="p">,</span> <span class="s1">&#39;fine_stone&#39;</span><span class="p">,</span> <span class="s1">&#39;middle_stone&#39;</span><span class="p">,</span> <span class="s1">&#39;coarse_stone&#39;</span><span class="p">,</span> <span class="s1">&#39;admixture_material&#39;</span><span class="p">,</span> <span class="s1">&#39;additive&#39;</span><span class="p">,</span> <span class="s1">&#39;water_cement_ratio&#39;</span><span class="p">,</span> <span class="s1">&#39;water_glue_ratio&#39;</span><span class="p">,</span> <span class="s1">&#39;mix_duration&#39;</span><span class="p">):</span>
+        <span class="n">practice_tag</span> <span class="o">=</span> <span class="s1">&#39;practice_</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">tag</span>
+        <span class="n">construct_tag</span> <span class="o">=</span> <span class="s1">&#39;construct_</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">tag</span>
+    <span class="o">...</span>
+</code></pre></div>
+
+
+<blockquote>
+<p>good</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code>    <span class="o">...</span>
+    <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;cement&#39;</span><span class="p">,</span> <span class="s1">&#39;water&#39;</span><span class="p">,</span> <span class="s1">&#39;sand&#39;</span><span class="p">,</span> <span class="s1">&#39;fine_stone&#39;</span><span class="p">,</span> <span class="s1">&#39;middle_stone&#39;</span><span class="p">,</span> <span class="s1">&#39;coarse_stone&#39;</span><span class="p">,</span> <span class="s1">&#39;admixture_material&#39;</span><span class="p">,</span> <span class="s1">&#39;additive&#39;</span><span class="p">,</span> <span class="s1">&#39;water_cement_ratio&#39;</span><span class="p">,</span> <span class="s1">&#39;water_glue_ratio&#39;</span><span class="p">,</span> <span class="s1">&#39;mix_duration&#39;</span><span class="p">):</span>
+        <span class="n">practice_tag</span><span class="p">,</span> <span class="n">construct_tag</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">_</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;practice&#39;</span><span class="p">,</span> <span class="s1">&#39;construct&#39;</span><span class="p">),</span> <span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="n">tag</span><span class="p">))</span>
+    <span class="o">...</span>
+</code></pre></div>
+
+
+<p><a href="#catalog">返回</a></p>
+<hr>
+<h2><span id="use-zip" />使用zip简化代码</h2>
+<blockquote>
+<p>bad</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code>    <span class="o">...</span>
+    <span class="k">for</span> <span class="n">record</span> <span class="ow">in</span> <span class="n">record_list</span><span class="p">:</span>
+        <span class="c1"># 转换sql记录为字典</span>
+        <span class="n">record_dict</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">field_index</span><span class="p">,</span> <span class="n">field_id</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">field_id_list</span><span class="p">):</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">record</span><span class="p">[</span><span class="n">field_index</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">value</span><span class="p">:</span>
+                <span class="n">record_dict</span><span class="p">[</span><span class="n">field_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+    <span class="o">...</span>
+</code></pre></div>
+
+
+<blockquote>
+<p>good</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code>    <span class="o">...</span>
+    <span class="k">for</span> <span class="n">record</span> <span class="ow">in</span> <span class="n">record_list</span><span class="p">:</span>
+        <span class="c1"># 转换sql记录为字典</span>
+        <span class="n">record_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">field_id</span><span class="p">:</span> <span class="n">value</span> <span class="k">for</span> <span class="n">field_id</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">field_id_list</span><span class="p">,</span> <span class="n">record</span><span class="p">)</span> <span class="k">if</span> <span class="n">value</span><span class="p">}</span>
+    <span class="o">...</span>
+</code></pre></div>
+
+
+<p><a href="#catalog">返回</a></p>
+<hr>
+<h2><span id="use-zip-unzip" />zip的逆</h2>
+<div class="highlight"><pre><span></span><code>    <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="p">((</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">,</span> <span class="s1">&#39;d&#39;</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+    <span class="n">zipped</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">))</span>
+    <span class="k">assert</span> <span class="n">zipped</span> <span class="o">==</span> <span class="p">[(</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;c&#39;</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;d&#39;</span><span class="p">,</span> <span class="mi">4</span><span class="p">)]</span>
+    <span class="n">c</span><span class="p">,</span> <span class="n">d</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">zipped</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">a</span> <span class="o">==</span> <span class="n">c</span> <span class="ow">and</span> <span class="n">b</span> <span class="o">==</span> <span class="n">d</span>
+</code></pre></div>
+
+
+<blockquote>
+<p>bad</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code>    <span class="n">station_list</span> <span class="o">=</span> <span class="p">[[</span><span class="s1">&#39;C1_1&#39;</span><span class="p">,</span> <span class="s1">&#39;1标1号拌合站&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;C1_2&#39;</span><span class="p">,</span> <span class="s1">&#39;1标2号拌合站&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;C2_1&#39;</span><span class="p">,</span> <span class="s1">&#39;2标1号拌合站&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;C2_2&#39;</span><span class="p">,</span> <span class="s1">&#39;2标2号拌合站&#39;</span><span class="p">]]</span>
+    <span class="n">station_sn_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">station_list</span><span class="p">]</span>
+    <span class="n">station_name_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">station_list</span><span class="p">]</span>
+    <span class="k">assert</span> <span class="n">station_sn_list</span> <span class="o">==</span> <span class="p">[</span><span class="s1">&#39;C1_1&#39;</span><span class="p">,</span> <span class="s1">&#39;C1_2&#39;</span><span class="p">,</span> <span class="s1">&#39;C2_1&#39;</span><span class="p">,</span> <span class="s1">&#39;C2_2&#39;</span><span class="p">]</span>
+    <span class="k">assert</span> <span class="n">station_name_list</span> <span class="o">==</span> <span class="p">[</span><span class="s1">&#39;1标1号拌合站&#39;</span><span class="p">,</span> <span class="s1">&#39;1标2号拌合站&#39;</span><span class="p">,</span> <span class="s1">&#39;2标1号拌合站&#39;</span><span class="p">,</span> <span class="s1">&#39;2标2号拌合站&#39;</span><span class="p">]</span>
+</code></pre></div>
+
+
+<blockquote>
+<p>good</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code>    <span class="n">station_list</span> <span class="o">=</span> <span class="p">[[</span><span class="s1">&#39;C1_1&#39;</span><span class="p">,</span> <span class="s1">&#39;1标1号拌合站&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;C1_2&#39;</span><span class="p">,</span> <span class="s1">&#39;1标2号拌合站&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;C2_1&#39;</span><span class="p">,</span> <span class="s1">&#39;2标1号拌合站&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;C2_2&#39;</span><span class="p">,</span> <span class="s1">&#39;2标2号拌合站&#39;</span><span class="p">]]</span>
+    <span class="n">station_sn_list</span><span class="p">,</span>  <span class="n">station_name_list</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">station_list</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">station_sn_list</span> <span class="o">==</span> <span class="p">(</span><span class="s1">&#39;C1_1&#39;</span><span class="p">,</span> <span class="s1">&#39;C1_2&#39;</span><span class="p">,</span> <span class="s1">&#39;C2_1&#39;</span><span class="p">,</span> <span class="s1">&#39;C2_2&#39;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">station_name_list</span> <span class="o">==</span> <span class="p">(</span><span class="s1">&#39;1标1号拌合站&#39;</span><span class="p">,</span> <span class="s1">&#39;1标2号拌合站&#39;</span><span class="p">,</span> <span class="s1">&#39;2标1号拌合站&#39;</span><span class="p">,</span> <span class="s1">&#39;2标2号拌合站&#39;</span><span class="p">)</span>
+</code></pre></div>
+
+
+<p><a href="#catalog">返回</a></p>
+<hr>
+<h2><span id="use-dict-get-default" />使用dict.get默认值简化代码</h2>
+<blockquote>
+<p>bad</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code>    <span class="o">...</span>
+    <span class="n">water_tag</span> <span class="o">=</span> <span class="s1">&#39;water&#39;</span>
+    <span class="n">water</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">record_dict</span><span class="p">[</span><span class="n">water_tag</span><span class="p">])</span> <span class="k">if</span> <span class="n">water_tag</span> <span class="ow">in</span> <span class="n">record_dict</span> <span class="k">else</span> <span class="mi">0</span>
+    <span class="o">...</span>
+</code></pre></div>
+
+
+<blockquote>
+<p>good</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code>    <span class="o">...</span>
+    <span class="n">water_tag</span><span class="p">,</span> <span class="n">default_value</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;water&#39;</span><span class="p">,</span> <span class="s1">&#39;0&#39;</span><span class="p">)</span>
+    <span class="n">water</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">record_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">water_tag</span><span class="p">,</span> <span class="n">default_value</span><span class="p">))</span>
+    <span class="o">...</span>
+</code></pre></div>
+
+
+<p><a href="#catalog">返回</a></p>
+<hr>
+<h2><span id="use-dict-update" />使用dict.update简化代码</h2>
+<blockquote>
+<p>bad</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code>    <span class="o">...</span>
+    <span class="n">result_render_dict</span><span class="p">[</span><span class="s1">&#39;date_type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">date_type</span>
+    <span class="n">result_render_dict</span><span class="p">[</span><span class="s1">&#39;station_sn_list&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">station_sn_list</span>
+    <span class="n">result_render_dict</span><span class="p">[</span><span class="s1">&#39;station_name_list&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">station_name_list</span>
+    <span class="n">result_render_dict</span><span class="p">[</span><span class="s1">&#39;default_station_sn&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">station_sn_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="o">...</span>
+</code></pre></div>
+
+
+<blockquote>
+<p>good</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code>    <span class="o">...</span>
+    <span class="n">result_render_dict</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;date_type&#39;</span><span class="p">:</span> <span class="n">date_type</span><span class="p">,</span>
+                               <span class="s1">&#39;station_sn_list&#39;</span><span class="p">:</span> <span class="n">station_sn_list</span><span class="p">,</span>
+                               <span class="s1">&#39;station_name_list&#39;</span><span class="p">:</span> <span class="n">station_name_list</span><span class="p">,</span>
+                               <span class="s1">&#39;default_station_sn&#39;</span><span class="p">:</span> <span class="n">station_sn_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]})</span>
+    <span class="o">...</span>
+</code></pre></div>
+
+
+<p><a href="#catalog">返回</a></p>
+<hr>
+<h2><span id="list-extract-value" />从列表取值</h2>
+<blockquote>
+<p>bad</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code>    <span class="o">...</span>
+    <span class="k">assert</span> <span class="n">record</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">record</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span>
+    <span class="n">record_id</span><span class="p">,</span> <span class="n">record_time</span> <span class="o">=</span> <span class="n">record</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span>
+    <span class="o">...</span>
+</code></pre></div>
+
+
+<blockquote>
+<p>good</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code>    <span class="o">...</span>
+    <span class="k">assert</span> <span class="n">record</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">record</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span>
+    <span class="n">record_id</span><span class="p">,</span> <span class="n">record_time</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">record</span>
+    <span class="o">...</span>
+</code></pre></div>
+
+
+<p><a href="#catalog">返回</a></p>
+<hr>
+<h2><span id="xx" />__</h2>
+<p><a href="#catalog">返回</a></p>
+<div class="highlight"><pre><span></span><code>```HTML
+<span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&quot;container&quot;</span><span class="nt">&gt;&lt;/div&gt;</span>
+<span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">&quot;stylesheet&quot;</span> <span class="na">href=</span><span class="s">&quot;https://imsun.github.io/gitment/style/default.css&quot;</span><span class="nt">&gt;</span>
+<span class="nt">&lt;script</span> <span class="na">src=</span><span class="s">&quot;https://imsun.github.io/gitment/dist/gitment.browser.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+<span class="nt">&lt;script&gt;</span>
+var gitment = new Gitment({
+  id: &#39;code_bad_style&#39;,
+  owner: &#39;hlqyq&#39;,
+  repo: &#39;hlqyq.github.io&#39;,
+  oauth: {
+    client_id: &#39;1f7a240da8bcca1563a9&#39;,
+    client_secret: &#39;2a59d57ab5b48ce420724d3032ce9cc099b00661&#39;,
+  },
+})
+gitment.render(&#39;container&#39;)
+<span class="nt">&lt;/script&gt;</span>
+```
+</code></pre></div>
+  </div>
+</article>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="row">
+       <ul class="col-sm-6 list-inline">
+          <li class="list-inline-item"><a href="/authors.html">Authors</a></li>
+          <li class="list-inline-item"><a href="/archives.html">Archives</a></li>
+          <li class="list-inline-item"><a href="/categories.html">Categories</a></li>
+        </ul>
+        <p class="col-sm-6 text-sm-right text-muted">
+          Generated by <a href="https://github.com/getpelican/pelican" target="_blank">Pelican</a> / <a href="https://github.com/nairobilug/pelican-alchemy" target="_blank">&#x2728;</a>
+        </p>
+      </div>
+    </div>
+  </footer>
+</body>
+
+</html>
