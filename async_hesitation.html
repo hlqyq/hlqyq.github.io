@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="chinese (simplified)">
+
+<head>
+  <!-- Required meta tags always come first -->
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <title>异步编程的彷徨 | 编程岁月
+</title>
+  <link rel="canonical" href="/async_hesitation.html">
+
+
+
+  <link rel="stylesheet" href="/theme/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/theme/css/font-awesome.min.css">
+  <link rel="stylesheet" href="/theme/css/pygments/default.min.css">
+  <link rel="stylesheet" href="/theme/css/style.css">
+
+
+<meta name="description" content="并发与并行 并发是指同时接收（但并不处理）多个用户请求的接单能力，相当于快餐店的前台服务员接单能力； 并行是指同时处理多个用户请求的能力，相当于快餐店厨房的做事能力。 前者属于IO(与客户沟通)密集型任务，后者属于CPU密集型任务。 一般而言，CPU密集型任务依赖于硬件设施的提升，其提升幅度成线性方式，且提升受限于成本。10台服务器提升大约10倍的处理能力，10核的服务器处理能力相对单核的服务器大约提升不到10倍。 所以优化力度不大。相反，对IO密集型任务，优化后的提升幅度可达成千上万倍，而成本基本不变。异步/协程正是解决IO密集型的良药，即并行处理能力的关键。 web应用的瓶颈 web应用相对于传统的C/S应用存在着明显的性能短板，因而如何提高web应用的并发数以及提升单次响应的处理时间是web应用面临的主要问题。 传统的web应用多采用同步阻塞的方式处理单次调用，而通过多进程、多线程解决并发问题问题。这实际上相当于用唐朝的剑斩清朝的官，安排厨司来帮前台接单，没有把握问题的关键。 典型的属于用金钱来弥补脑力的不足。今天，合适的异步框架再加上http2的推送技术，已经可以达到每秒120万次的响应能力，如果采用传统的方式，这得安排大约24000台服务器（按单服务器50次/秒并发数计算），如果每台服务器3万元，则需要服务器成本7.2亿，这至少也需要超级大咖实现7个以上的小目标才能做到 …">
+</head>
+
+<body>
+  <header class="header">
+    <div class="container">
+      <div class="row">
+        <div class="col-sm-12">
+          <h1 class="title"><a href="">编程岁月</a></h1>
+          <p class="text-muted">无名</p>
+          <ul class="list-inline">
+            <li class="list-inline-item"><a href="https://github.com/hlqyq" target="_blank">github</a></li>
+            <li class="list-inline-item"><a href="http://blog.justtodo.com/" target="_blank">晓月刀</a></li>
+            <li class="list-inline-item"><a href="http://www.csew.cn/" target="_blank">易睿</a></li>
+            <li class="list-inline-item"><a href="http://blog.csdn.net/hlqyq/" target="_blank">博客</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="main">
+    <div class="container">
+      <h1>异步编程的彷徨
+</h1>
+      <hr>
+<article class="article">
+  <header>
+    <ul class="list-inline">
+      <li class="list-inline-item text-muted" title="2018-01-26T00:00:00+08:00">
+        <i class="fa fa-clock-o"></i>
+        周五 26 一月 2018
+      </li>
+      <li class="list-inline-item">
+        <i class="fa fa-folder-open-o"></i>
+        <a href="/category/bands.html">bands</a>
+      </li>
+      <li class="list-inline-item">
+        <i class="fa fa-user-o"></i>
+        <a href="/author/hu-le-qiu.html">胡乐秋</a>      </li>
+    </ul>
+  </header>
+  <div class="content">
+    <h1>并发与并行</h1>
+<p>并发是指同时<code>接收</code>（但并不处理）多个用户请求的接单能力，相当于快餐店的前台服务员接单能力；
+并行是指同时<code>处理</code>多个用户请求的能力，相当于快餐店厨房的做事能力。
+前者属于IO(与客户沟通)密集型任务，后者属于CPU密集型任务。
+一般而言，CPU密集型任务依赖于硬件设施的提升，其提升幅度成线性方式，且提升受限于成本。10台服务器提升大约10倍的处理能力，10核的服务器处理能力相对单核的服务器大约提升不到10倍。
+所以优化力度不大。相反，对IO密集型任务，优化后的提升幅度可达成千上万倍，而成本基本不变。异步/协程正是解决IO密集型的良药，即并行处理能力的关键。</p>
+<h1>web应用的瓶颈</h1>
+<p>web应用相对于传统的C/S应用存在着明显的性能短板，因而如何提高web应用的并发数以及提升单次响应的处理时间是web应用面临的主要问题。
+传统的web应用多采用同步阻塞的方式处理单次调用，而通过多进程、多线程解决并发问题问题。这实际上相当于用唐朝的剑斩清朝的官，安排厨司来帮前台接单，没有把握问题的关键。
+典型的属于用金钱来弥补脑力的不足。今天，合适的异步框架再加上http2的推送技术，已经可以达到每秒120万次的响应能力，如果采用传统的方式，这得安排大约24000台服务器（按单服务器50次/秒并发数计算），如果每台服务器3万元，则需要服务器成本7.2亿，这至少也需要超级大咖实现7个以上的小目标才能做到，估计大咖也会相当肉痛的。</p>
+<p>今天，web应用的门槛已经很低了，各个信息公司都会开发web应用系统，都说自己的技术先进。那么到底是谁在裸泳呢，使用一个压力测试工具吧，如<a href="https://hlqyq.github.io/sanic_web_performance_test.html">sanic测试脚本</a>,在笔者的机器上（ThinkPad T440P Win10)：</p>
+<h2>weixin.qq.com:80</h2>
+<ol>
+<li>测试次数: 500</li>
+<li>单次最小耗时（秒): 0.121</li>
+<li>单次最大耗时（秒): 3.465</li>
+<li>单次评价耗时（秒): 0.857</li>
+<li>每秒请求次数: 142</li>
+</ol>
+<h2>www.baidu.com:443</h2>
+<ol>
+<li>测试次数: 50</li>
+<li>单次最小耗时（秒): 0.916</li>
+<li>单次最大耗时（秒): 1.213</li>
+<li>单次评价耗时（秒): 1.045</li>
+<li>每秒请求次数: 41</li>
+</ol>
+<h2>www.sina.com.cn:80</h2>
+<ol>
+<li>测试次数: 50</li>
+<li>单次最小耗时（秒): 2.758</li>
+<li>单次最大耗时（秒): 33.298</li>
+<li>单次评价耗时（秒): 18.850</li>
+<li>每秒请求次数: 1.5</li>
+</ol>
+<h1>协程的彷徨</h1>
+<p>异步/协程看来是解决并发的良药，协程有着同步阻塞类似的编程风格，却有着异步的性能。golang便是以并发作为卖点，python近几年的生态圈也是以asyncio异步库为核心，sanic/aiohttp等web框架库也相继出现。协程看来是如此美好，然而如何解决以下问题：</p>
+<ol>
+<li>侵入式编程: 程序员在写程序之时，不仅要关注功能，还要时刻关注运行方式（本方法应该是普通函数、还是协程；被调用方法是普通函数、还是协程函数或者生成器函数，这造成精神负担）。</li>
+<li>全局变量陷进：每一个协程函数都必须是可重入的，不能依赖于全局变量，如果非要用，则最好是只读全局变量（启动时初始化）。</li>
+<li>一处协程、处处协程：一旦开始了协程，则处处都必须是协程。</li>
+<li>生态圈不完整：大量的现有库都尚未移植到异步版本，如果直接调用，则可能导致阻塞，会比多线程版本更差。</li>
+<li>学习成本高：程序员要学习的东西很多，事件循环、Future、Task、条件变量、事件等等。</li>
+<li>避不开的阻塞：必须衡量每一段代码的运行时间，一处阻塞，所有用户都阻塞。</li>
+</ol>
+<h1>结论</h1>
+<p>异步/协程是美好的、先进的，是应该学习与掌握的。然而，协程应用于目前的生产环境，其生态圈还需要发展、技术还需要积累，部署到生产环境依然需要谨慎、任重而道远。</p>
+<div id="container"></div>
+
+<p><link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+<script>
+var gitment = new Gitment({
+  id: 'async_hesitation',
+  owner: 'hlqyq',
+  repo: 'hlqyq.github.io',
+  oauth: {
+    client_id: '1f7a240da8bcca1563a9',
+    client_secret: '2a59d57ab5b48ce420724d3032ce9cc099b00661',
+  },
+})
+gitment.render('container')
+</script></p>
+  </div>
+</article>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="row">
+       <ul class="col-sm-6 list-inline">
+          <li class="list-inline-item"><a href="/authors.html">Authors</a></li>
+          <li class="list-inline-item"><a href="/archives.html">Archives</a></li>
+          <li class="list-inline-item"><a href="/categories.html">Categories</a></li>
+        </ul>
+        <p class="col-sm-6 text-sm-right text-muted">
+          Generated by <a href="https://github.com/getpelican/pelican" target="_blank">Pelican</a> / <a href="https://github.com/nairobilug/pelican-alchemy" target="_blank">&#x2728;</a>
+        </p>
+      </div>
+    </div>
+  </footer>
+</body>
+
+</html>
