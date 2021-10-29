@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="chinese (simplified)">
+
+<head>
+  <!-- Required meta tags always come first -->
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <title>基于反向代理的服务器混合部署架构 | 编程岁月
+</title>
+  <link rel="canonical" href="/reverse_proxy_server_architecture.html">
+
+
+
+  <link rel="stylesheet" href="/theme/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/theme/css/font-awesome.min.css">
+  <link rel="stylesheet" href="/theme/css/pygments/default.min.css">
+  <link rel="stylesheet" href="/theme/css/style.css">
+
+
+<meta name="description" content="基于反向代理的服务器混合部署架构 名词术语 服务器 一般意义上的服务器包含三个方面的内容： 服务器软件: 一个或一组可协同工作的应用软件，提供特定业务服务的功能实现。 服务器硬件：一个或一组计算机硬件（物理服务器电脑），提供稳定的存储和计算能力，是服务器软件的运行载体。 服务器地址: 一个对客户（一般为浏览器）可见的静态地址（如公网IP），客户通过该地址特定的端口访问服务器提供的特定服务； 通常谈到服务器时，一般是三方面内容的统一。但在基于反向代理的中小企业服务器架构,需要将三者予以分离。 代理 "引入一个中间层，可以解决很多问题",代理即是这一原则的体现。通过在客户和服务器之间引入代理，可用于解决许多常见的问题。基于不同的服务对象，代理可分为正向代理和反向代理. 一、正向代理 正向代理，服务的对象是客户端, 即模拟一个客户端，帮助客户访问确定的服务器（对客户可见，有具体的静态地址，如公网IP）。如客户委托保险公司进行车辆年检，保险公司充当的角色即为正向代理，服务的对象是客户个人。 二、反向代理 反向代理，服务的对象是服务器，即模拟一个服务器，接收客户访问请求，并将该请求派发到一组可选的服务器（一般对客户地址不可见 …">
+</head>
+
+<body>
+  <header class="header">
+    <div class="container">
+      <div class="row">
+        <div class="col-sm-12">
+          <h1 class="title"><a href="">编程岁月</a></h1>
+          <p class="text-muted">无名</p>
+          <ul class="list-inline">
+            <li class="list-inline-item"><a href="https://github.com/hlqyq" target="_blank">github</a></li>
+            <li class="list-inline-item"><a href="http://blog.justtodo.com/" target="_blank">晓月刀</a></li>
+            <li class="list-inline-item"><a href="http://www.csew.cn/" target="_blank">易睿</a></li>
+            <li class="list-inline-item"><a href="http://blog.csdn.net/hlqyq/" target="_blank">博客</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="main">
+    <div class="container">
+      <h1>基于反向代理的服务器混合部署架构
+</h1>
+      <hr>
+<article class="article">
+  <header>
+    <ul class="list-inline">
+      <li class="list-inline-item text-muted" title="2021-10-29T00:00:00+08:00">
+        <i class="fa fa-clock-o"></i>
+        周五 29 十月 2021
+      </li>
+      <li class="list-inline-item">
+        <i class="fa fa-folder-open-o"></i>
+        <a href="/category/bands.html">bands</a>
+      </li>
+      <li class="list-inline-item">
+        <i class="fa fa-user-o"></i>
+        <a href="/author/hu-le-qiu.html">胡乐秋</a>      </li>
+    </ul>
+  </header>
+  <div class="content">
+    <h1>基于反向代理的服务器混合部署架构</h1>
+<h2>名词术语</h2>
+<h3>服务器</h3>
+<p>一般意义上的服务器包含三个方面的内容：</p>
+<ol>
+<li>服务器软件: 一个或一组可协同工作的应用软件，提供特定业务服务的功能实现。</li>
+<li>服务器硬件：一个或一组计算机硬件（物理服务器电脑），提供稳定的存储和计算能力，是服务器软件的运行载体。</li>
+<li>服务器地址: 一个对客户（一般为浏览器）可见的静态地址（如公网IP），客户通过该地址特定的端口访问服务器提供的特定服务；</li>
+</ol>
+<p>通常谈到服务器时，一般是三方面内容的统一。但在基于反向代理的中小企业服务器架构,需要将三者予以分离。</p>
+<h3>代理</h3>
+<p>"引入一个中间层，可以解决很多问题",代理即是这一原则的体现。通过在客户和服务器之间引入代理，可用于解决许多常见的问题。基于不同的服务对象，代理可分为正向代理和反向代理.</p>
+<h4>一、正向代理</h4>
+<p>正向代理，服务的对象是客户端, 即模拟一个客户端，帮助客户访问确定的服务器（对客户可见，有具体的静态地址，如公网IP）。如客户委托保险公司进行车辆年检，保险公司充当的角色即为正向代理，服务的对象是客户个人。</p>
+<h4>二、反向代理</h4>
+<p>反向代理，服务的对象是服务器，即模拟一个服务器，接收客户访问请求，并将该请求派发到一组可选的服务器（一般对客户地址不可见，如服务器局域网地址）。如客户到检测站进行车辆年检, 检测站充当的角色即为反向代理，服务的对象是公安交警，即模拟公安交警为客户提供车辆年检服务，并将实际的审批任务转发给本地公安交警。</p>
+<h2>服务器部署架构</h2>
+<h3>一、本地服务器架构</h3>
+<p>本地服务器部署架构, 即在企业所在地建立服务器机房，安装服务器硬件，部署服务器软件，向ISP厂商购买企业专线和公网IP的地址。初装费及年度运行费用均较高，但数据保密性最好，适合于大中型企业。</p>
+<h4>1.1 优点</h4>
+<ol>
+<li>用户数据存储于本地，保密性极好。</li>
+<li>可按需添加服务器资源, 扩充性极好。</li>
+<li>软件部署、调试方便。</li>
+</ol>
+<h4>1.2 缺点</h4>
+<ol>
+<li>通讯费用价格昂贵, 企业专线(6～10万/年)。</li>
+<li>需要搭建规范的服务器机房。</li>
+<li>难以解决机房停电、断网等意外外部事故，难以实现灾难级别时的数据安全。</li>
+<li>服务器常年运行，容易发生硬盘损坏等硬件故障。</li>
+<li>服务器有公网ip，面临网络安全问题，容易感染病毒、黑客入侵和劫持（肉鸡）。</li>
+<li>需要专门维护人员，进行机房维护及数据备份。</li>
+</ol>
+<h3>二、云服务器架构</h3>
+<p>云服务器部署架构, 即向云服务器提供商（阿里、腾讯、华为等）购买虚拟服务器硬件和公网IP地址，并在其上部署服务器软件。入门门槛低，初装费及年度运行费用对资源敏感，数据保密性教差，适合于中小型企业。</p>
+<h4>2.1 优点</h4>
+<ol>
+<li>入门门槛较低，无需搭建服务器机房及维护。</li>
+<li>按需购买配置, 扩充性好。</li>
+<li>不存在停电、断网等意外外部事故，灾难级别数据安全有保证。</li>
+<li>服务器有云服务商提供维护，不容易发生硬件故障。</li>
+<li>服务器有公网ip，但有网络安全专业人员维护，网络安全有保证。</li>
+</ol>
+<h4>2.2 缺点</h4>
+<ol>
+<li>硬件资源扩充性价比低，随资源增加价格呈指数级(非线性)增长。</li>
+<li>数据保密性差，不适合于敏感数据,并面临被审查的风险。</li>
+</ol>
+<h3>三、混合架构</h3>
+<p>混合部署架构即采用云服务器和本地服务器相结合的部署方式，充分利用云服务器入门门槛低和本地服务器资源扩充性价比高的特点。云服务器充当了反向代理角色，提供服务代理入口，并派发给本地服务器执行。适合于预算有限的中小型企业。</p>
+<h4>3.1 优点</h4>
+<ol>
+<li>相对于企业专线，入门版的云服务器通讯费用普遍较低。</li>
+<li>用户数据存储于本地，保密性极好。</li>
+<li>硬件资源扩充按线性级正常，性价比高。</li>
+<li>本地服务器无公网IP, 对用户不可见，网络安全性较好</li>
+</ol>
+<h4>3.2 缺点</h4>
+<ol>
+<li>用户访问服务需经多次转发，性能较低。</li>
+<li>需要搭建规范的服务器机房。</li>
+<li>难以解决机房停电、断网等意外外部事故，难以实现灾难级别时的数据安全。</li>
+<li>需要专门维护人员，进行机房维护及数据备份。</li>
+</ol>
+<h2>混合部署架构图</h2>
+<div class="highlight"><pre><span></span><code>        <span class="nx">tcp</span><span class="o">:</span><span class="mi">80</span>                            <span class="nx">tcp</span><span class="o">:</span><span class="mi">7000</span>                         <span class="nx">tcp</span><span class="o">:</span><span class="mi">80</span>
+<span class="nx">客户</span> <span class="o">============</span><span class="p">=&gt;</span> <span class="nx">反向代理服务端</span><span class="p">(</span><span class="nx">frps</span><span class="p">)</span> <span class="o">&lt;==========</span><span class="p">=&gt;</span> <span class="nx">反向代理客户端</span><span class="p">(</span><span class="nx">frpc</span><span class="p">)</span> <span class="o">&lt;=======</span><span class="p">=&gt;</span> <span class="nx">本地服务</span>
+           <span class="o">|</span>                                <span class="o">|</span>
+           <span class="o">|</span>                                <span class="o">|</span>
+  <span class="nx">客户电脑</span>  <span class="o">|</span>           <span class="nx">云服务器</span>              <span class="o">|</span>                  <span class="nx">本地服务器</span>
+           <span class="o">|</span>                                <span class="o">|</span>
+           <span class="o">|</span>                                <span class="o">|</span>
+</code></pre></div>
+
+
+<h2>结论</h2>
+<p>基于反向代理的服务器混合部署架构充分利用了云服务器的入门门槛低和本地服务器资源扩展性价比高的特点，解决了本地服务器的网络安全问题并提供极好的数据保密性。给预算有限的中小企业带来了一种新的选择。
+以20M带宽为例，可将中小企业的服务器通讯费用控制在3000元/年以内。在极端的情况下，可以使用达到0.73元/日的云服务器(腾讯云) + 0.14元/每日电费(树莓派4b, &lt;10wx24小时x0.58元/度)实现一个互联网网盘及公司网站托管。</p>
+<p align="right">胡乐秋</p>
+
+<p align="right">2021-09-17</p>
+
+<div id="container"></div>
+
+<p><link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+<script>
+var gitment = new Gitment({
+  id: 'reverse_proxy_server_architecture',
+  owner: 'hlqyq',
+  repo: 'hlqyq.github.io',
+  oauth: {
+    client_id: '1f7a240da8bcca1563a9',
+    client_secret: '2a59d57ab5b48ce420724d3032ce9cc099b00661',
+  },
+})
+gitment.render('container')
+</script></p>
+  </div>
+</article>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="row">
+       <ul class="col-sm-6 list-inline">
+          <li class="list-inline-item"><a href="/authors.html">Authors</a></li>
+          <li class="list-inline-item"><a href="/archives.html">Archives</a></li>
+          <li class="list-inline-item"><a href="/categories.html">Categories</a></li>
+        </ul>
+        <p class="col-sm-6 text-sm-right text-muted">
+          Generated by <a href="https://github.com/getpelican/pelican" target="_blank">Pelican</a> / <a href="https://github.com/nairobilug/pelican-alchemy" target="_blank">&#x2728;</a>
+        </p>
+      </div>
+    </div>
+  </footer>
+</body>
+
+</html>
